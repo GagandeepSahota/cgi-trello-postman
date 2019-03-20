@@ -1,0 +1,303 @@
+{
+	"info": {
+		"_postman_id": "6edb0c94-ecb2-4de7-b190-cd69b96ac1f4",
+		"name": "Boarmanipulation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CreateBoard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f306d9ef-4f3e-4e1c-b41c-be99346afe5e",
+						"exec": [
+							"var jsonData= pm.response.json();",
+							"console.log('id of new board=', jsonData.id);",
+							"pm.globals.set('boardId',jsonData.id);",
+							"",
+							"/*if(pm.response.code !== 200){",
+							"    pm.setNextRequest(null);",
+							"    throw new Error('Create Failed!!');",
+							"    ",
+							"}*/",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Content-Type is present\", pm.verifyContentTypeHeader);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/?key={{key}}&token={{Token}}&name={{boardName}}&defaultLists=false",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{Token}}"
+						},
+						{
+							"key": "name",
+							"value": "{{boardName}}"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateBoard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f306d9ef-4f3e-4e1c-b41c-be99346afe5e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData= pm.response.json();",
+							"console.log('id of update board=', jsonData.id);",
+							"//pm.globals.set('boardId',jsonData.id);",
+							"pm.globals.set('boardName',jsonData.name);",
+							"",
+							"pm.test(\"Content-Type is present\", pm.verifyContentTypeHeader);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b88709f4-1ff3-442c-aec2-f57625239be5",
+						"exec": [
+							"console.log(pm.globals.get('boardId'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/:id?key={{key}}&token={{Token}}&name={{newName}}&defaultLists=false",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{Token}}"
+						},
+						{
+							"key": "name",
+							"value": "{{newName}}"
+						},
+						{
+							"key": "defaultLists",
+							"value": "false"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VerifyUpdate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f306d9ef-4f3e-4e1c-b41c-be99346afe5e",
+						"exec": [
+							"var jsonData= pm.response.json();",
+							"",
+							"console.log('Board Name is:',jsonData.name);",
+							"console.log('env variable is:',pm.globals.get('boardName'));",
+							"",
+							"",
+							"pm.test(\"Body matches string\", function () {",
+							"    pm.expect(jsonData.name).to.eql(pm.globals.get('boardName'));",
+							"});",
+							"",
+							"//verify content type, stored as key-va;ue pair",
+							"pm.verifyContentTypeHeader = function(){",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.response.headers.map(function(header){",
+							"        if(header.key === 'Content-Type'){",
+							"            pm.expect(header.value).to.eql('application/json; charset=utf-8');",
+							"        }",
+							"    });",
+							"};",
+							"",
+							"pm.test(\"Content-Type is present\", pm.verifyContentTypeHeader);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/:id?key={{key}}&token={{Token}}&name={{boardName}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{Token}}"
+						},
+						{
+							"key": "name",
+							"value": "{{boardName}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteBoard",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f306d9ef-4f3e-4e1c-b41c-be99346afe5e",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b88709f4-1ff3-442c-aec2-f57625239be5",
+						"exec": [
+							"console.log(pm.globals.get('boardId'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://api.trello.com/1/boards/:id?key={{key}}&token={{Token}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"trello",
+						"com"
+					],
+					"path": [
+						"1",
+						"boards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						},
+						{
+							"key": "token",
+							"value": "{{Token}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
